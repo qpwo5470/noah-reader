@@ -5,7 +5,7 @@
 
 ## 구조
 ```
-아이패드(이 사이트) ──토큰으로 GitHub API──▶ 데이터 레포 inbox/<id>.jpg
+태블릿(이 사이트) ──토큰으로 GitHub API──▶ 데이터 레포 inbox/<id>.jpg
                                               │ push → Actions(process-inbox)
                                               ▼ Claude OCR + ElevenLabs TTS
                                          pages/<id>/{page.jpg, thumb.jpg, audio-*.mp3, page.json}
@@ -18,9 +18,9 @@
 ## 기기 설정 (한 번)
 1. https://github.com/settings/personal-access-tokens/new 에서 fine-grained 토큰 생성
    - Repository access: Only select repositories → `noah-school-studies`
-   - 권한은 링크로 미리 채움: https://github.com/settings/personal-access-tokens/new?name=noah-reader-ipad&contents=write&expires_in=366
+   - 권한은 링크로 미리 채움: https://github.com/settings/personal-access-tokens/new?name=noah-reader-tablet&contents=write&expires_in=366
 2. 사이트의 ⚙️ 설정에 토큰 저장. 토큰은 그 기기 브라우저 localStorage에만 저장된다.
-3. 아이패드 Safari 공유 → 홈 화면에 추가.
+3. 태블릿 홈 화면에 추가 (iPad: Safari 공유 메뉴, 안드로이드: Chrome ⋮ 메뉴).
 
 ## 로컬 시험 (외부 API 없이)
 ```
