@@ -208,9 +208,9 @@
     if (e.target.closest('.endcard')) return;
     closePop();
     const x = e.clientX / strip.clientWidth;
-    if (x < 0.3) (rtl ? next : prev)();
-    else if (x > 0.7) (rtl ? prev : next)();
-    else showUI(!document.body.classList.contains('ui'));
+    // 탭으로는 쪽을 넘기지 않는다(한자 누르다 넘어가는 문제). 넘기기는 스와이프·◀▶ 버튼·키보드. 탭은 메뉴 열고 닫기만.
+    void x;
+    showUI(!document.body.classList.contains('ui'));
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'ArrowRight') (rtl ? prev : next)();
