@@ -15,6 +15,10 @@
 - 텍스트 수정: `inbox/<id>.regen.json` 커밋 → 음성만 다시
 - 삭제: `inbox/<id>.delete.json` 커밋 → `pages/<id>` 삭제 (git 기록에는 남음)
 
+## 한자 만화 (`hanja/`)
+목차 오른쪽 위 **漢** 버튼. 화면 파일은 데이터 레포 `hanja/web/`이 원본이고 `hanja/tools/sync-web.sh`로 여기 `hanja/`에 복사한다(직접 고치지 말 것).
+책 이미지·`book.json`·`dict.json`은 데이터 레포의 `hanja-data` 브랜치에 있고, 위 설정의 같은 토큰으로 읽는다(단어장 뜻 수정은 `dict.json`을 sha와 함께 다시 커밋).
+
 ## 기기 설정 (한 번)
 1. https://github.com/settings/personal-access-tokens/new 에서 fine-grained 토큰 생성
    - Repository access: Only select repositories → `noah-school-studies`
@@ -27,4 +31,5 @@
 DATA=/tmp/noah-data PROCESS_CMD="cd ../noah-school-studies && ROOT=/tmp/noah-data MOCK_MODE=1 node app/scripts/process-inbox.js" node dev/mock-github.js
 # http://localhost:8787 열고 콘솔에서:
 # localStorage['noah.gh']=JSON.stringify({token:'x',api:'http://localhost:8787'})
+# 한자 만화: DATA=<hanja-data 내용 폴더> node dev/mock-github.js → http://localhost:8787/hanja/?gh=1
 ```

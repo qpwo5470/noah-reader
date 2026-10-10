@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>단어장</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="words">
+  <h1 style="display:flex;align-items:center;gap:12px"><a class="btn" href="index.html">☰</a> 단어장 <span id="count" style="font-size:15px;color:#aaa"></span></h1>
+  <div class="tools">
+    <input type="search" id="q" placeholder="한글·한자·뜻 찾기">
+    <button class="btn" data-f="all">전체</button>
+    <button class="btn" data-f="dup">같은 말·다른 한자</button>
+    <button class="btn" data-f="tapped">눌러본 단어</button>
+  </div>
+  <table><thead><tr><th>한자</th><th>한글</th><th>뜻 (눌러서 고치기)</th><th>횟수</th><th></th></tr></thead><tbody id="rows"></tbody></table>
+</div>
+<script src="common.js"></script>
+<script>
+(async () => {
+  if (!H.requireSetup()) return;
+  let dict;
+  try { dict = await H.json('dict.json'); } catch (e) {
+    document.getElementById('rows').innerHTML = `<tr><td colspan="5">단어장을 불러오지 못했어요: ${H.esc(e.message)}</td></tr>`;
+    return;
+  }
+  const entries = Object.entries(dict).map(([key, e]) => ({ key, ...e }));
+  const byK = {};
+  entries.forEach((e) => (byK[e.k] ||= []).push(e));
+  const dupK = new Set(Object.values(byK).filter((a) => a.filter((e) => !e.hidden).length > 1).map((a) => a[0].k));
+  const tapped = H.tapped();
+  const tappedIdx = new Map(tapped.map((t, i) => [t.k, i]));
+  document.getElementById('count').textContent = `${entries.length}개`;
+  let filter = 'all';
+  const rows = document.getElementById('rows');
+
+  function render() {
+    const q = document.getElementById('q').value.trim();
+    let list = entries.filter((e) => !q || e.k.includes(q) || e.h.includes(q) || (e.m || '').includes(q));
+    if (filter === 'dup') list = list.filter((e) => dupK.has(e.k)).sort((a, b) => a.k.localeCompare(b.k, 'ko'));
+    else if (filter === 'tapped') list = list.filter((e) => tappedIdx.has(e.key)).sort((a, b) => tappedIdx.get(a.key) - tappedIdx.get(b.key));
+    else list.sort((a, b) => (b.n || 0) - (a.n || 0) || a.k.localeCompare(b.k, 'ko'));
+    rows.innerHTML = list.slice(0, 500).map((e) => `
+      <tr data-key="${H.esc(e.key)}" class="${dupK.has(e.k) ? 'dup' : ''} ${e.hidden ? 'hidden' : ''}">
+        <td class="h">${H.esc(e.h)}</td>
+        <td class="k">${H.esc(e.k)}${e.user ? '<span class="tag">수정됨</span>' : ''}</td>
+        <td class="m"><input value="${H.esc(e.m || '')}" placeholder="뜻 준비 중" ${e.hidden ? 'disabled' : ''}></td>
+        <td class="n">${e.n || 0}</td>
+        <td><button class="btn del" title="${e.hidden ? '한자 표시 안 함(숨김)' : '이 단어는 한자로 표시하지 않기'}">${e.hidden ? '숨김' : '✕'}</button></td>
+      </tr>`).join('');
+  }
+  document.getElementById('q').oninput = render;
+  document.querySelectorAll('[data-f]').forEach((b) => (b.onclick = () => {
+    filter = b.dataset.f;
+    document.querySelectorAll('[data-f]').forEach((x) => x.classList.toggle('on', x === b));
+    render();
+  }));
+  rows.addEventListener('change', async (e) => {
+    const tr = e.target.closest('tr');
+    if (!tr || !e.target.matches('input')) return;
+    const key = tr.dataset.key;
+    const input = e.target;
+    input.disabled = true;
+    try { await H.saveWord(key, { m: input.value }); } catch (err) { input.disabled = false; return alert(err.message); }
+    input.disabled = false;
+    dict[key].m = input.value.trim();
+    dict[key].user = true;
+    tr.querySelector('.k').innerHTML = `${H.esc(dict[key].k)}<span class="tag">수정됨</span>`;
+  });
+  rows.addEventListener('click', async (e) => {
+    const b = e.target.closest('.del');
+    if (!b) return;
+    const tr = b.closest('tr');
+    const key = tr.dataset.key;
+    if (dict[key].hidden) return;
+    if (!confirm(`'${dict[key].k}'(${dict[key].h})을 한자로 표시하지 않을까요?`)) return;
+    b.disabled = true;
+    try { await H.saveWord(key, { hidden: true }); } catch (err) { b.disabled = false; return alert(err.message); }
+    b.disabled = false;
+    dict[key].hidden = true;
+    dict[key].user = true;
+    tr.querySelector('input').disabled = true;
+    tr.classList.add('hidden');
+    b.textContent = '숨김';
+  });
+  document.querySelector('[data-f=all]').classList.add('on');
+  render();
+})();
+</script>
+</body>
+</html>

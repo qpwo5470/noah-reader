@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>읽기</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="reader ui">
+<div id="strip"></div>
+
+<div class="bar" id="top">
+  <a class="btn" href="index.html" title="목차">☰</a>
+  <div class="title" id="title"></div>
+  <button class="btn" id="prevVol" title="이전 권">◀ 권</button>
+  <button class="btn" id="nextVol" title="다음 권">권 ▶</button>
+  <button class="btn on" id="mode" title="한자 표시 / 원본">漢</button>
+  <button class="btn" id="text" title="이 쪽 글 보기">글</button>
+</div>
+<div class="bar" id="bottom">
+  <button class="btn" id="prevPg">◀</button>
+  <input type="range" id="slider" min="0" max="0" value="0">
+  <button class="btn" id="nextPg">▶</button>
+  <div class="pg" id="pg">0 / 0</div>
+</div>
+<button class="btn primary" id="back">↩ 돌아가기</button>
+<div id="hint"></div>
+<div id="pop"></div>
+<div id="sheet"></div>
+
+<script src="common.js"></script>
+<script src="reader.js"></script>
+</body>
+</html>

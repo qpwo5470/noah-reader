@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>한자 만화</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="lib">
+  <h1>한자 만화 <span class="sp"></span>
+    <a class="btn" id="cont" href="#" style="display:none">▶ 이어 읽기</a>
+    <a class="btn" href="words.html">단어장</a>
+    <a class="btn" id="setup" href="../setup.html" title="이 기기 설정" style="display:none">⚙️</a>
+  </h1>
+  <div id="list"><div class="empty">불러오는 중…</div></div>
+</div>
+<script src="common.js"></script>
+<script>
+(async () => {
+  if (!H.requireSetup()) return;
+  const list = document.getElementById('list');
+  if (H.GH) document.getElementById('setup').style.display = '';
+  let lib;
+  try { lib = await H.json('books/library.json'); } catch (e) {
+    list.innerHTML = H.GH
+      ? `<div class="empty">책 목록을 불러오지 못했어요: ${H.esc(e.message)}<br>맥에서 책을 만들어 올리면(hanja-data 브랜치) 여기 나타납니다.</div>`
+      : `<div class="empty">아직 책이 없습니다.<br>맥에서 <code>node pipeline/build.js 만화.zip --series "제목" --vol 1</code> 로 책을 만들면 여기 나타납니다.</div>`;
+    return;
+  }
+  const last = H.ls.get('hanja:last');
+  if (last) {
+    const c = document.getElementById('cont');
+    c.href = `reader.html?b=${encodeURIComponent(last)}`;
+    c.style.display = '';
+  }
+  if (!lib.series.length) { list.innerHTML = '<div class="empty">아직 책이 없습니다.</div>'; return; }
+  list.innerHTML = lib.series.map((s) => `
+    <h2>${H.esc(s.title)}</h2>
+    <div class="grid">${s.volumes.map((v) => {
+      const p = H.progress(v.id);
+      const pct = v.pages ? Math.round(((p + 1) / v.pages) * 100) : 0;
+      return `<a class="card" href="reader.html?b=${encodeURIComponent(v.id)}">
+        ${v.cover ? `<img data-p="books/${H.esc(v.cover)}" alt="">` : '<div style="aspect-ratio:5/7;background:#333"></div>'}
+        ${p > 0 ? `<div class="prog"><i style="width:${pct}%"></i></div>` : ''}
+        <div class="cap">${H.esc(v.title)}<small>${v.pages}쪽 · 한자어 ${v.words}${p > 0 ? ` · ${p + 1}쪽까지` : ''}</small></div></a>`;
+    }).join('')}</div>`).join('');
+  // 표지: 로컬은 바로 경로, GitHub 방식은 blob URL
+  list.querySelectorAll('img[data-p]').forEach((img) => H.img(img.dataset.p).then((u) => (img.src = u), () => {}));
+})();
+</script>
+</body>
+</html>
