@@ -18,7 +18,7 @@
 ## 기기 설정 (한 번)
 1. https://github.com/settings/personal-access-tokens/new 에서 fine-grained 토큰 생성
    - Repository access: Only select repositories → `noah-school-studies`
-   - Permissions → Contents: Read and write
+   - 권한은 링크로 미리 채움: https://github.com/settings/personal-access-tokens/new?name=noah-reader-ipad&contents=write&expires_in=366
 2. 사이트의 ⚙️ 설정에 토큰 저장. 토큰은 그 기기 브라우저 localStorage에만 저장된다.
 3. 아이패드 Safari 공유 → 홈 화면에 추가.
 
