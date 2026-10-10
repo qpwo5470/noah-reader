@@ -43,7 +43,7 @@
     else if (filter === 'tapped') list = list.filter((e) => tappedIdx.has(e.key)).sort((a, b) => tappedIdx.get(a.key) - tappedIdx.get(b.key));
     else list.sort((a, b) => (b.n || 0) - (a.n || 0) || a.k.localeCompare(b.k, 'ko'));
     rows.innerHTML = list.slice(0, 500).map((e) => `
-      <tr data-key="${H.esc(e.key)}" class="${dupK.has(e.k) ? 'dup' : ''} ${e.hidden ? 'hidden' : ''}">
+      <tr data-key="${H.esc(e.key)}" class="${dupK.has(e.k) ? 'dup' : ''} ${e.hidden || (e.msrc === 'none' && !e.user) ? 'hidden' : ''}" title="${e.msrc === 'none' && !e.user ? '사전에 없는 한자 짝이라 리더에서 한글로 보임. 뜻을 넣으면 표시됨' : ''}">
         <td class="h">${H.esc(e.h)}</td>
         <td class="k">${H.esc(e.k)}${e.user ? '<span class="tag">수정됨</span>' : ''}</td>
         <td class="m"><input value="${H.esc(e.m || '')}" placeholder="뜻 준비 중" ${e.hidden ? 'disabled' : ''}></td>

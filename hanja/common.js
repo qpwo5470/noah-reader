@@ -176,6 +176,8 @@ Object.assign(H, {
         if (!s.h) return H.esc(s.t);
         const e = dict[`${s.t}|${s.h}`];
         if (e && e.hidden) return H.esc(s.t); // 단어장에서 뺀 단어는 한글로
+        // 두 사전 모두에 (한글+한자) 짝이 없으면 모델이 한자를 잘못 골랐을 가능성이 커서 한글로 둔다(사람이 뜻을 넣으면 표시)
+        if (e && e.msrc === 'none' && !e.user) return H.esc(s.t);
         return `<span class="hj" data-k="${H.esc(s.t)}" data-h="${H.esc(s.h)}">${H.esc(s.h)}</span>`;
       })
       .join('');
