@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>노아 영어 읽기</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="topbar"><h1>📚 노아 영어 읽기</h1><a href="setup.html"><button class="ghost" aria-label="설정">⚙️</button></a></div>
+<div class="wrap">
+  <div id="list" class="grid"></div>
+  <div id="empty" class="msg" style="display:none">아직 만든 페이지가 없어요.<br>오른쪽 아래 버튼으로 숙제 사진을 올려 보세요.</div>
+</div>
+<a href="upload.html"><button class="primary fab">＋ 새 페이지</button></a>
+<script src="common.js"></script>
+<script>
+const STATUS = { processing: '만드는 중…', error: '오류', ready: '', queued: '만드는 중…', deleting: '지우는 중…' };
+async function load() {
+  const [pages, inbox] = await Promise.all([getJson('pages/index.json'), listDir('inbox')]);
+  const all = (pages || []).map((p) => ({ ...p }));
+  const deleting = new Set(inbox.filter((f) => f.endsWith('.delete.json')).map((f) => f.replace('.delete.json', '')));
+  const regen = new Set(inbox.filter((f) => f.endsWith('.regen.json')).map((f) => f.replace('.regen.json', '')));
+  for (const p of all) { if (deleting.has(p.id)) p.status = 'deleting'; else if (regen.has(p.id)) p.status = 'processing'; }
+  for (const f of inbox) {
+    const m = f.match(/^(.+)\.(jpe?g|png|webp)$/i);
+    if (m && !all.some((p) => p.id === m[1])) all.unshift({ id: m[1], title: '새 페이지', status: 'queued', createdAt: new Date(Number(m[1].split('-')[0])).toISOString(), pending: true });
+  }
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  document.getElementById('empty').style.display = all.length ? 'none' : 'block';
+  for (const p of all) {
+    const a = document.createElement('a');
+    a.className = 'card';
+    a.href = `reader.html?id=${encodeURIComponent(p.id)}`;
+    a.innerHTML = `<img alt="" loading="lazy">
+      ${STATUS[p.status] ? `<span class="badge">${STATUS[p.status]}</span>` : ''}
+      ${p.pending || p.status === 'deleting' ? '' : '<button class="del" title="삭제" aria-label="삭제">🗑</button>'}
+      <div class="t"></div><div class="d">${fmtDate(p.createdAt)}</div>`;
+    a.querySelector('.t').textContent = p.title;
+    if (!p.pending) getBlobUrl(`pages/${p.id}/thumb.jpg`).then((u) => { a.querySelector('img').src = u; }).catch(() => {});
+    const del = a.querySelector('.del');
+    if (del) del.addEventListener('click', async (ev) => {
+      ev.preventDefault(); ev.stopPropagation();
+      if (!confirm(`"${p.title}" 페이지를 삭제할까요?`)) return;
+      try { await putJson(`inbox/${p.id}.delete.json`, { id: p.id }, `delete ${p.id}`); load(); }
+      catch (e) { alert(e.message); }
+    });
+    list.appendChild(a);
+  }
+  if (all.some((p) => ['processing', 'queued', 'deleting'].includes(p.status))) setTimeout(() => load().catch(() => {}), 8000);
+}
+if (requireSetup()) load().catch((e) => { const el = document.getElementById('empty'); el.textContent = '목록을 불러오지 못했어요: ' + e.message; el.style.display = 'block'; });
+</script>
+</body>
+</html>

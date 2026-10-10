@@ -1,0 +1,72 @@
+:root {
+  --bg: #f7f5ef; --card: #ffffff; --ink: #1f2430; --muted: #6b7280;
+  --accent: #5b4fcf; --accent-soft: #e6e3fb; --hi: #ffd84d; --hi-sent: #fff5cc;
+  --loop: #d9f3e4; --danger: #d64545; --radius: 18px;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; font-size: 18px; }
+body { min-height: 100vh; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; border: 0; border-radius: 14px; background: var(--card); color: var(--ink); padding: 0 18px; min-height: 56px; min-width: 56px; box-shadow: 0 1px 2px rgba(0,0,0,.08); cursor: pointer; user-select: none; touch-action: manipulation; }
+button:active { transform: scale(.97); }
+button.primary { background: var(--accent); color: #fff; font-weight: 700; }
+button.ghost { background: transparent; box-shadow: none; }
+button.on { background: var(--accent); color: #fff; }
+button.danger { background: var(--danger); color: #fff; }
+button[disabled] { opacity: .45; }
+input[type=password], input[type=text], textarea { font: inherit; width: 100%; padding: 14px; border: 2px solid #ddd; border-radius: 14px; background: #fff; font-size: 20px; }
+textarea { min-height: 260px; line-height: 1.5; }
+.topbar { display: flex; align-items: center; gap: 12px; padding: 12px 16px; position: sticky; top: 0; background: var(--bg); z-index: 5; }
+.topbar h1 { font-size: 22px; margin: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wrap { padding: 16px; max-width: 1100px; margin: 0 auto; }
+.msg { color: var(--muted); padding: 24px; text-align: center; }
+.err { color: var(--danger); background: #fde8e8; padding: 14px; border-radius: 14px; margin: 12px 0; white-space: pre-wrap; }
+/* 목차 */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.card { background: var(--card); border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.06); display: block; position: relative; }
+.card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; background: #eee; display: block; }
+.card .t { padding: 12px 14px 4px; font-weight: 700; font-size: 19px; }
+.card .d { padding: 0 14px 14px; color: var(--muted); font-size: 14px; }
+.card .badge { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,.6); color: #fff; padding: 4px 10px; border-radius: 999px; font-size: 13px; }
+.card .del { position: absolute; top: 8px; right: 8px; min-height: 40px; min-width: 40px; padding: 0 10px; font-size: 16px; }
+.fab { position: fixed; right: 20px; bottom: 20px; min-height: 64px; font-size: 20px; border-radius: 999px; padding: 0 26px; box-shadow: 0 6px 18px rgba(91,79,207,.35); }
+/* 업로드 */
+.field { margin: 18px 0; }
+.field label { display: block; font-weight: 700; margin-bottom: 8px; }
+.bigbtn { width: 100%; min-height: 84px; font-size: 22px; }
+.preview { width: 100%; max-height: 50vh; object-fit: contain; border-radius: var(--radius); background: #eee; margin-top: 12px; }
+.row { display: flex; gap: 10px; align-items: center; }
+.row > * { flex: 1; }
+.remember { display: flex; align-items: center; gap: 8px; font-size: 16px; color: var(--muted); margin-top: 8px; }
+.remember input { width: 24px; height: 24px; }
+/* 리더 */
+.reader { padding: 16px 16px 240px; max-width: 1000px; margin: 0 auto; }
+.photo { width: 100%; border-radius: var(--radius); display: none; margin-bottom: 16px; }
+.photo.show { display: block; }
+.text { font-size: 30px; line-height: 1.9; font-family: "Avenir Next", "Segoe UI", "Noto Sans", sans-serif; }
+.line { display: block; }
+.sent { border-radius: 10px; padding: 2px 0; }
+.sent.cur { background: var(--hi-sent); }
+.sent.loop { background: var(--loop); }
+.w { display: inline-block; padding: 2px 5px; margin: 0 1px; border-radius: 8px; cursor: pointer; }
+.w.cur { background: var(--hi); font-weight: 700; }
+.w.a, .w.b { outline: 3px solid var(--accent); }
+.w.inrange { background: var(--loop); }
+.text.abmode .w { outline: 1px dashed #c8c3f2; }
+.controls { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.97); backdrop-filter: blur(8px); border-top: 1px solid #e5e5e5; padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); display: grid; gap: 10px; z-index: 10; }
+.controls .r { display: flex; gap: 10px; justify-content: center; align-items: center; }
+.controls .r > button { flex: 1; max-width: 220px; font-size: 18px; }
+.play { min-height: 72px !important; max-width: 300px !important; font-size: 26px !important; }
+.speed { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 20px; min-width: 80px; text-align: center; }
+.hint { text-align: center; color: var(--muted); font-size: 15px; min-height: 1.2em; }
+.spinner { width: 48px; height: 48px; border: 5px solid #ddd; border-top-color: var(--accent); border-radius: 50%; margin: 30px auto; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.sheet { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: none; align-items: flex-end; z-index: 20; }
+.sheet.show { display: flex; }
+.sheet .in { background: #fff; width: 100%; max-height: 90vh; overflow: auto; border-radius: 24px 24px 0 0; padding: 20px; }
+@media (max-width: 600px) {
+  .text { font-size: 26px; }
+  .controls .r > button { font-size: 16px; padding: 0 8px; white-space: nowrap; }
+  .play { font-size: 22px !important; }
+  #prev, #next, #slow, #fast, #loopSent, #loopAB, #loopOff { font-size: 15px; }
+}
